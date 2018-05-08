@@ -8,6 +8,7 @@
     <div>
       <p>追加したい内容を記入してください</p>
       <input type='text' id='inputText'/>
+      <input type='hidden' id='startDate' value='<?= startDate ?>'/>
     </div>
     <div>
       <input type='button' value="OK" onClick='procOK()' />
@@ -23,10 +24,11 @@
       }
       function procOK() {
         var elm = document.getElementById('inputText');
+        var stdt = document.getElementById('startDate');
         google.script.run
           .withFailureHandler(onFailure)
           .withSuccessHandler(onSuccess)
-          .onOkButtonClick(elm.value);
+          .onOkButtonClick(stdt.value, elm.value);
       }
       function procCancel() {
         google.script.run

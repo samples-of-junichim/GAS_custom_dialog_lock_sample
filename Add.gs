@@ -22,6 +22,7 @@ function procAdd() {
   
   // ダイアログ表示
   var dialogHtml = HtmlService.createTemplateFromFile('SampleCustomDialog');
+  dialogHtml.startDate = getProcStart();
   
   ui.showModalDialog(dialogHtml.evaluate(), '追加したいテキストを入力');
 }
@@ -29,14 +30,15 @@ function procAdd() {
 /**
  * ダイアログでOKボタンが押された場合の処理
  *
+ * @param startDate  処理開始日時, ISO-8601形式のUTC時刻
  * @param inputText  入力されたテキスト
  */
-function onOkButtonClick(inputText) {
-  Logger.log('onOkButtonClick, OKボタンがおされました: ' + inputText);
+function onOkButtonClick(startDate, inputText) {
+  Logger.log('onOkButtonClick, OKボタンがおされました: ' + startDate + ',' + inputText);
 
   var ui = SpreadsheetApp.getUi();
   
-  if (! isInTime()) {
+  if (! doesSomeTimeElapsed(startDate)) {
     ui.alert('処理を開始してから、一定時間以上たったので処理を中止します。再度処理を行ってください。');
     setProcEnd();
     return;

@@ -65,17 +65,7 @@ function isInTime() {
     return false;
   }
   
-  var stDt = new Date(st_str);
-  var cur = new Date();
-
-  // 現在時刻の一定時間以内なら true, 比較はミリ秒で行う
-  Logger.log('cur   :' + cur.getTime());
-  Logger.log('cur-10:' + (cur.getTime() - Constants().ELAPSED_TIME_FOR_SAME_PROC));
-  Logger.log('stDt  :' + stDt.getTime());
-  Logger.log('isInTime:' + ((cur.getTime() - Constants().ELAPSED_TIME_FOR_SAME_PROC) < stDt.getTime()));
-  
-  return (cur.getTime() - Constants().ELAPSED_TIME_FOR_SAME_PROC) < stDt.getTime();
-  
+  return doesSomeTimeElapsed(st_str);  
 }
 
 /**
