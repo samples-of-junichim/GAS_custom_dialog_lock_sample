@@ -10,6 +10,18 @@ function setProcStart() {
   var prop = PropertiesService.getDocumentProperties();
   prop.setProperty(Constants().PROPERTY_KEY_PROC_ST_DT, (new Date()).toISOString());
 
+  // セットされるまで待つ
+  //   プロパティへの値の設定・取得時に遅延があるように思われるので、
+  //   トリッキーだが、一定時間待つようにする
+  for (var i = 0; i < 100; i++) { // 最大 10 sec
+    if (getProcStart()) {
+      Logger.log('wait time: ' + i);
+      Logger.log('st time: ' + getProcStart());
+      break;
+    }
+    Utilities.sleep(100); // 一回当たり 100 msec まつ
+  }
+  
 }
 
 /**
@@ -35,7 +47,19 @@ function getProcStart() {
  */
 function isInTime() {
   
-  var st_str = getProcStart();
+  // 取得できるまで待つ
+  //   プロパティへの値の設定・取得時に遅延があるように思われるので、
+  //   トリッキーだが、一定時間待つようにする
+  var st_str;
+  for (var i = 0; i < 100; i++) { // 最大 10sec まつ
+    st_str = getProcStart();
+    if (st_str) {
+      Logger.log('isInTime, wait: ' + i);
+      break;
+    }
+    Utilities.sleep(100); // 一回当たり 100 msec まつ
+  }
+  
   if (! st_str) {
     Logger.log('no procStart time:' + st_str);
     return false;
