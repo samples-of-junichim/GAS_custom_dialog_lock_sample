@@ -5,13 +5,15 @@ function procAdd() {
 
   var ui = SpreadsheetApp.getUi();
   
-  if (isInTime()) {
-    ui.alert('処理中です。しばらく待ってから再度試してください。');
-    return;
-  }
   var lock = LockService.getDocumentLock();
   if (lock.tryLock(1000)) {
     // ロック取得成功
+    if (isInTime()) {
+      ui.alert('処理中です。しばらく待ってから再度試してください。');
+      lock.releaseLock();
+      return;
+    }
+    
     setProcStart();
     lock.releaseLock();
   } else {
