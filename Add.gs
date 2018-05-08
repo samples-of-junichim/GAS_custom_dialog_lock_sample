@@ -1,5 +1,3 @@
-var lock;
-
 /**
  * 追加処理
  */
@@ -7,8 +5,16 @@ function procAdd() {
 
   var ui = SpreadsheetApp.getUi();
   
-  lock = LockService.getDocumentLock();
-  if (false === lock.tryLock(1000)) {
+  if (isInTime()) {
+    ui.alert('処理中です。しばらく待ってから再度試してください。');
+    return;
+  }
+  var lock = LockService.getDocumentLock();
+  if (lock.tryLock(1000)) {
+    // ロック取得成功
+    setProcStart();
+    lock.releaseLock();
+  } else {
     // ロック取得失敗
     ui.alert('ロック取得に失敗しました。しばらく待ってから再度試してください。');
     return;
@@ -28,13 +34,14 @@ function procAdd() {
 function onOkButtonClick(inputText) {
   Logger.log('onOkButtonClick, OKボタンがおされました: ' + inputText);
 
-  if (false === lock.hasLock()) {
-    Logger.log('ロックがありません。処理を中断します。');
-    return;
-  }
-  
   var ui = SpreadsheetApp.getUi();
   
+  if (! isInTime()) {
+    ui.alert('処理を開始してから、一定時間以上たったので処理を中止します。再度処理を行ってください。');
+    setProcEnd();
+    return;
+  }
+
   // 追記先の取得
   var sheet = SpreadsheetApp.getActiveSheet();
   var maxRow = sheet.getDataRange().getLastRow();
@@ -45,7 +52,7 @@ function onOkButtonClick(inputText) {
   
   Logger.log('追記先:' + target.getA1Notation());
   
-  lock.releaseLock();
+  setProcEnd();
   
   // ダイアログ表示
   ui.alert('以下を追記しました。\n' +
@@ -55,5 +62,5 @@ function onOkButtonClick(inputText) {
 
 function onCancelButtonClick() {
   Logger.log('onCancelButtonClick');
-  lock.releaseLock();
+  setProcEnd();
 }
