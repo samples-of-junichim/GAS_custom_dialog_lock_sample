@@ -1,9 +1,18 @@
+var lock;
+
 /**
  * 追加処理
  */
 function procAdd() {
 
   var ui = SpreadsheetApp.getUi();
+  
+  lock = LockService.getDocumentLock();
+  if (false === lock.tryLock(1000)) {
+    // ロック取得失敗
+    ui.alert('ロック取得に失敗しました。しばらく待ってから再度試してください。');
+    return;
+  }
   
   // ダイアログ表示
   var dialogHtml = HtmlService.createTemplateFromFile('SampleCustomDialog');
@@ -19,6 +28,11 @@ function procAdd() {
 function onOkButtonClick(inputText) {
   Logger.log('onOkButtonClick, OKボタンがおされました: ' + inputText);
 
+  if (false === lock.hasLock()) {
+    Logger.log('ロックがありません。処理を中断します。');
+    return;
+  }
+  
   var ui = SpreadsheetApp.getUi();
   
   // 追記先の取得
@@ -31,6 +45,8 @@ function onOkButtonClick(inputText) {
   
   Logger.log('追記先:' + target.getA1Notation());
   
+  lock.releaseLock();
+  
   // ダイアログ表示
   ui.alert('以下を追記しました。\n' +
            inputText);
@@ -39,4 +55,5 @@ function onOkButtonClick(inputText) {
 
 function onCancelButtonClick() {
   Logger.log('onCancelButtonClick');
+  lock.releaseLock();
 }
