@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h3>追加処理を行います。</h3>
+    <div>
+      <p>追加したい内容を記入してください</p>
+      <input type='text' id='inputText'/>
+    </div>
+    <div>
+      <input type='button' value="OK" onClick='procOK()' />
+      <input type='button' value="キャンセル" onClick='procCancel()' />
+    </div>
+    <script>
+      function onFailure(error) {
+        alert(error.message);
+        google.script.host.close();
+      }
+      function onSuccess() {
+        google.script.host.close();
+      }
+      function procOK() {
+        var elm = document.getElementById('inputText');
+        google.script.run
+          .withFailureHandler(onFailure)
+          .withSuccessHandler(onSuccess)
+          .onOkButtonClick(elm.value);
+      }
+      function procCancel() {
+        google.script.run
+          .withFailureHandler(onFailure)
+          .withSuccessHandler(onSuccess)
+          .onCancelButtonClick();
+      }
+    </script>
+  </body>
+</html>
+
+
